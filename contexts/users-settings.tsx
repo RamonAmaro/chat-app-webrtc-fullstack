@@ -41,7 +41,7 @@ export default function UsersSettingsProvider({ children }: any) {
         streams,
         isMuted,
         isHidden,
-        isHost: isHost(router.query.qoraId as RoomId),
+        isHost: isHost(router.query.roomId as RoomId),
         avatars,
         names,
         sharedScreenTrack,

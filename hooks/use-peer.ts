@@ -14,7 +14,7 @@ import { error } from '@common/utils';
  */
 const usePeer = (stream: MediaStream) => {
   const socket = useContext(SocketContext);
-  const room = useRouter().query.qoraId as RoomId;
+  const room = useRouter().query.roomId as RoomId;
   const user = { name: 'Ramon', id: Math.random(), picture: '' };
 
   const { muted, visible } = useMediaStream(stream);

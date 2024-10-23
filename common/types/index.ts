@@ -20,7 +20,7 @@ export type TSocket = ClientSocket<DefaultEventsMap, DefaultEventsMap>;
 export type KeyValue<T> = Record<string, T>;
 export type Nullable<T> = T | null;
 
-export type QoraContextType = {
+export type RoomContextType = {
   socket: TSocket;
   roomId: RoomId;
   peer: Peer;

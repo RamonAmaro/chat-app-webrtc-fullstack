@@ -1,4 +1,4 @@
-import { customAlphabet } from 'nanoid';
+import { v4 as uuidv4 } from 'uuid';
 import { KeyValue, RoomId } from '@common/types';
 
 function toggle(trackKind: 'audio' | 'video') {
@@ -23,8 +23,7 @@ export function formatTimeHHMM(milliseconds: number) {
 }
 
 export function createRoomId(): RoomId {
-  const nanoid = customAlphabet('abcdefghijklmnopqrstuvxyz', 10);
-  return nanoid();
+  return uuidv4();
 }
 
 export function createHost(roomId: RoomId): void {

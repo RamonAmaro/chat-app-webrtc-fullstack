@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { useState } from 'react';
 
 import Room from '@app/index';
 import { Lobby } from '@components/index';
@@ -7,8 +7,6 @@ import { NextPage } from 'next';
 
 import { LoaderError } from '@common/components';
 import { FAILURE_MSG, LOADER_STREAM_MSG } from '@common/constants';
-
-export const RoomContext = createContext<any>({});
 
 const RoomPage: NextPage = () => {
   const [isLobby, setIsLobby] = useState(true);

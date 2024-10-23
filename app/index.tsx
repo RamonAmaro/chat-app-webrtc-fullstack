@@ -25,6 +25,7 @@ export default function App({ stream }: { stream: MediaStream }) {
   const [modal, setModal] = useState<'hidden' | 'chat' | 'status' | 'close'>(
     'hidden'
   );
+
   const [fullscreen, setFullscreen] = useState(false);
 
   function replaceTrack(track: MediaStreamTrack) {
