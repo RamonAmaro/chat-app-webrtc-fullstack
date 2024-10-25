@@ -21,7 +21,9 @@ export default function SocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!socket?.active) {
-      const socket = io('wss://enhanced-dory-smiling.ngrok-free.app');
+      const socket = io('wss://enhanced-dory-smiling.ngrok-free.app', {
+        transports: ['websocket'],
+      });
       console.log(socket);
       setSocket(socket);
     }
