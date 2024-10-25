@@ -21,7 +21,7 @@ export default function SocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!socket?.active) {
-      const socket = io('http://localhost:8080');
+      const socket = io('wss://enhanced-dory-smiling.ngrok-free.app');
       console.log(socket);
       setSocket(socket);
     }
