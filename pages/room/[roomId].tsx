@@ -1,9 +1,10 @@
-import { useState } from 'react';
+'use client';
 
-import Room from '@app/index';
 import { Lobby } from '@components/index';
 import { useMediaStream } from '@hooks/index';
 import { NextPage } from 'next';
+import Room from 'presentation/room/index';
+import { useState } from 'react';
 
 import { LoaderError } from '@common/components';
 import { FAILURE_MSG, LOADER_STREAM_MSG } from '@common/constants';

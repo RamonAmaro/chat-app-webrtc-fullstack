@@ -1,12 +1,9 @@
+'use client';
+
+import SocketProvider from 'contexts/socket';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { createContext } from 'react';
-import { io } from 'socket.io-client';
 import '../styles/globals.css';
-
-const socket = io('/', { path: '/api/socketio', transports: ['websocket'] });
-
-export const SocketContext = createContext(socket);
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -18,9 +15,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           href="https://cdn.jsdelivr.net/npm/react-toastify@9.0.6/dist/ReactToastify.css"
         />
       </Head>
-      <SocketContext.Provider value={socket}>
+      <SocketProvider>
         <Component {...pageProps} />
-      </SocketContext.Provider>
+      </SocketProvider>
     </>
   );
 }

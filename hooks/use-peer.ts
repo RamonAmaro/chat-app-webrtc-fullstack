@@ -1,19 +1,19 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useMediaStream } from '@hooks/index';
-import { SocketContext } from '@pages/_app';
 import { useRouter } from 'next/router';
-import Peer from 'peerjs';
 
 import { Nullable, PeerId, RoomId } from '@common/types';
 import { error } from '@common/utils';
+import { useSocketContext } from 'contexts/socket';
+import Peer from 'peerjs';
 
 /**
  * Creates a peer and joins them into the room
  * @returns peer object, its id and meta-state whether is peer fully created
  */
 const usePeer = (stream: MediaStream) => {
-  const socket = useContext(SocketContext);
+  const socket = useSocketContext();
   const room = useRouter().query.roomId as RoomId;
   const user = { name: 'Ramon', id: Math.random(), picture: '' };
 
@@ -31,9 +31,9 @@ const usePeer = (stream: MediaStream) => {
         setIsLoading(false);
 
         peer.on('open', (id) => {
-          console.log('your device id: ', id);
+          console.log('your device id: ', { id, socket });
           setMyId(id);
-          socket.emit('room:join', {
+          socket?.emit('room:join', {
             room,
             user: {
               id,

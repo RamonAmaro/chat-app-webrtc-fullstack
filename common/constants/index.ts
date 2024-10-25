@@ -3,7 +3,6 @@ import { ToastContainerProps } from 'react-toastify';
 export const ROOM_NAME = 'room';
 export const WINDOW_SIZE_IN_SAMPLES = 1024;
 export const MYSELF = 'You';
-export const SOCKET_PATH = '/api/socketio';
 export const TOAST_PROPS: ToastContainerProps = {
   position: 'bottom-left',
   theme: 'dark',

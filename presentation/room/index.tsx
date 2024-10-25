@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { ControlPanel, Chat, Status } from '@components/index';
-import { Streams, SharedScreenStream } from '@components/streams';
+import { Chat, ControlPanel, Status } from '@components/index';
+import { SharedScreenStream, Streams } from '@components/streams';
 import { usePeer, useScreen } from '@hooks/index';
 import useMediaStream from '@hooks/use-media-stream';
-import { SocketContext } from '@pages/_app';
-import { UsersSettingsProvider, UsersConnectionProvider } from 'contexts';
+import { UsersConnectionProvider, UsersSettingsProvider } from 'contexts';
 import { useRouter } from 'next/router';
 import { MediaConnection } from 'peerjs';
 import { toast, ToastContainer } from 'react-toastify';
@@ -13,10 +12,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import { LoaderError, Modal } from '@common/components';
 import { FAILURE_MSG, LOADER_PEER_MSG, TOAST_PROPS } from '@common/constants';
 import { Kind, PeerId } from '@common/types';
+import { useSocketContext } from 'contexts/socket';
 
 export default function App({ stream }: { stream: MediaStream }) {
   const router = useRouter();
-  const socket = useContext(SocketContext);
+  const socket = useSocketContext();
 
   const { muted, visible, toggle, toggleVideo } = useMediaStream(stream);
   const { peer, myId, isPeerReady } = usePeer(stream);
@@ -39,13 +39,7 @@ export default function App({ stream }: { stream: MediaStream }) {
   }
 
   useEffect(() => {
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    socket.on('host:muted-user', (peerId: PeerId) => {
+    socket?.on('host:muted-user', (peerId: PeerId) => {
       if (myId === peerId) {
         toggleKind('audio');
         toast('you are muted by host');
@@ -55,7 +49,7 @@ export default function App({ stream }: { stream: MediaStream }) {
     });
 
     return () => {
-      socket.off('host:muted-user');
+      socket?.off('host:muted-user');
     };
   }, [myId]);
 
@@ -66,29 +60,29 @@ export default function App({ stream }: { stream: MediaStream }) {
     switch (kind) {
       case 'audio': {
         toggle('audio')(stream);
-        socket.emit('user:toggle-audio', myId);
+        socket?.emit('user:toggle-audio', myId);
         return;
       }
       case 'video': {
         toggleVideo((newVideoTrack: MediaStreamTrack) =>
           users!.forEach(replaceTrack(newVideoTrack))
         );
-        socket.emit('user:toggle-video', myId);
+        socket?.emit('user:toggle-video', myId);
         return;
       }
       case 'screen': {
         if (screenTrack) {
           stopShare(screenTrack);
-          socket.emit('user:stop-share-screen');
+          socket?.emit('user:stop-share-screen');
           setFullscreen(false);
           toast('Stopped presenting screen');
         } else {
           await startShare(
             () => {
-              socket.emit('user:share-screen');
+              socket?.emit('user:share-screen');
               toast('Starting presenting screen');
             },
-            () => socket.emit('user:stop-share-screen')
+            () => socket?.emit('user:stop-share-screen')
           );
         }
         return;
@@ -111,11 +105,11 @@ export default function App({ stream }: { stream: MediaStream }) {
   }
 
   return (
-    <div className="flex">
+    <div className="flex w-full h-full">
       <UsersSettingsProvider>
-        <div className="sm:flex hidden flex-col p-4 w-full h-screen">
+        <div className="sm:flex flex-col flex p-4 w-full h-screen">
           <UsersConnectionProvider stream={stream} myId={myId} peer={peer}>
-            <div className="flex h-full place-items-center place-content-center gap-4">
+            <div className="flex flex-1 place-items-center place-content-center gap-4">
               <SharedScreenStream
                 sharedScreen={screenTrack}
                 fullscreen={fullscreen}

@@ -1,5 +1,5 @@
+import { Nullable, Status } from '@common/types';
 import React from 'react';
-import { Status, Nullable } from '@common/types';
 
 export default function useStream(stream: Nullable<MediaStream> = null) {
   const [state, setState] = React.useState<Nullable<MediaStream>>(stream);

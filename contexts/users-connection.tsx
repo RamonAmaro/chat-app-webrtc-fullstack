@@ -4,11 +4,11 @@ import { toast } from 'react-toastify';
 import { append } from '@common/utils';
 import { useMediaStream } from '@hooks/index';
 
-import { SocketContext } from '@pages/_app';
-import { PeerVideo } from '@components/index';
-import { UsersStateContext, UsersUpdaterContext } from './users-settings';
 import { PeerId } from '@common/types';
+import { PeerVideo } from '@components/index';
 import { useRouter } from 'next/router';
+import { useSocketContext } from './socket';
+import { UsersStateContext, UsersUpdaterContext } from './users-settings';
 
 export const UsersConnectionContext = createContext<any>({});
 
@@ -22,7 +22,7 @@ export default function UsersConnectionProvider({
   // const user = useUser().user!;
   const user = { name: 'Ramon', id: Math.random(), picture: '' };
 
-  const socket = useContext(SocketContext);
+  const socket = useSocketContext();
   const { streams } = useContext(UsersStateContext);
   const {
     setIsMuted,
@@ -37,7 +37,7 @@ export default function UsersConnectionProvider({
   const [users, setUsers] = useState<any>({});
 
   function leaveRoom(id: PeerId) {
-    socket.emit('user:leave', id);
+    socket?.emit('user:leave', id);
     users[id].close();
     setStreams((s: any) => {
       const obj: any = {};
@@ -50,9 +50,9 @@ export default function UsersConnectionProvider({
 
   // * user a accepts user b and make a call
   useEffect(() => {
-    if (!peer) return;
+    if (!peer || !socket?.active) return;
 
-    socket.on(
+    socket?.on(
       'user:joined',
       ({ id, name, picture, muted: initMuted, visible: initVisible }: any) => {
         console.table({
@@ -98,9 +98,9 @@ export default function UsersConnectionProvider({
     );
 
     return () => {
-      socket.off('user:joined');
+      socket?.off('user:joined');
     };
-  }, [peer]);
+  }, [peer, socket]);
 
   // * user b answers to user a's call
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function UsersConnectionProvider({
   }, [peer]);
 
   useEffect(() => {
-    socket.on('user:left', (peerId: PeerId) => {
+    socket?.on('user:left', (peerId: PeerId) => {
       if (myId === peerId) router.push('/');
       else {
         delete streams[peerId];
@@ -148,12 +148,12 @@ export default function UsersConnectionProvider({
     });
 
     return () => {
-      socket.off('user:left');
+      socket?.off('user:left');
     };
   }, [myId, users]);
 
   useEffect(() => {
-    socket.on('user:shared-screen', (username: string) => {
+    socket?.on('user:shared-screen', (username: string) => {
       if (peer) {
         peer.disconnect();
         peer.reconnect();
@@ -162,18 +162,18 @@ export default function UsersConnectionProvider({
     });
 
     return () => {
-      socket.off('user:shared-screen');
+      socket?.off('user:shared-screen');
     };
   }, [peer]);
 
   useEffect(() => {
-    socket.on('user:stopped-screen-share', () => {
+    socket?.on('user:stopped-screen-share', () => {
       setSharedScreenTrack(null);
       toast('Stopped sharing screen');
     });
 
     return () => {
-      socket.off('user:stopped-screen-share');
+      socket?.off('user:stopped-screen-share');
     };
   }, []);
 

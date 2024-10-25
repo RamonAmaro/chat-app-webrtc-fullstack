@@ -1,34 +1,35 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { UserMessage } from '@common/types';
 import { MYSELF } from '@common/constants';
+import { UserMessage } from '@common/types';
 import { append, formatTimeHHMM } from '@common/utils';
-
-import { SocketContext } from '@pages/_app';
+import { useSocketContext } from 'contexts/socket';
 import { Message } from '..';
 
 const Chat = () => {
   const username = `Ramon ${Math.floor(Math.random() * 100)}`;
-  const socket = useContext(SocketContext);
+  const socket = useSocketContext();
 
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<UserMessage[]>([]);
 
   useEffect(() => {
-    socket.on('chat:get', (message: UserMessage) =>
-      setMessages(append(message))
-    );
+    if (!!socket?.active) {
+      socket.on('chat:get', (message: UserMessage) =>
+        setMessages(append(message))
+      );
 
-    return () => {
-      socket.off('chat:get');
-    };
+      return () => {
+        socket.off('chat:get');
+      };
+    }
   }, []);
 
   function sendMessage(e: React.KeyboardEvent<HTMLInputElement>) {
     const messageText = (e.target as HTMLInputElement).value;
     const lastMessage = messages.at(-1);
 
-    if (e.key === 'Enter' && messageText) {
+    if (e.key === 'Enter' && messageText && !!socket?.active) {
       const timeHHMM = formatTimeHHMM(Date.now());
       const message = {
         user: username,
