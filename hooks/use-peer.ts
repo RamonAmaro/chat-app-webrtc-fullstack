@@ -26,7 +26,7 @@ const usePeer = (stream: MediaStream) => {
   useEffect(() => {
     (async function createPeerAndJoinRoom() {
       try {
-        const peer = new (await import('peerjs')).default();
+        const peer = new Peer();
         setPeer(peer);
         setIsLoading(false);
 
